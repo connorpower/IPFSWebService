@@ -10,9 +10,9 @@ import Foundation
 
 open class InlineResponse200: Codable {
 
-    public var name: String?
-    public var hash: String?
-    public var size: String?
+    public var Name: String?
+    public var Hash: String?
+    public var Size: String?
 
     public init() {}
 

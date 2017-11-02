@@ -23,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let error = error {
                 fatalError("\(error)")
             } else if let response = response {
-                print("File added.\n  Name: \(response.Name!)\n  hash: \(response.Hash!)\n  size: \(response.Size!)")
+                print("File added.\n  Name: \(response.name!)\n  hash: \(response.hash!)\n  size: \(response.size!)")
             }
         }
     }

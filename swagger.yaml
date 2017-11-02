@@ -46,7 +46,7 @@ paths:
               Hash:
                 type: string
                 example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
-              Bytes:
+              Size:
                 type: integer
                 format: int64
                 example: 193960

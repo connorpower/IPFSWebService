@@ -47,6 +47,5 @@ paths:
                 type: string
                 example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
               Size:
-                type: integer
-                format: int64
+                type: string
                 example: 193960

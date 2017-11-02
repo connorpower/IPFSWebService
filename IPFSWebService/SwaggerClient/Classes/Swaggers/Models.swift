@@ -34,3 +34,139 @@ open class Response<T> {
         self.init(statusCode: response.statusCode, header: header, body: body)
     }
 }
+
+private var once = Int()
+class Decoders {
+    static fileprivate var decoders = Dictionary<String, ((AnyObject, AnyObject?) -> AnyObject)>()
+
+    static func addDecoder<T>(clazz: T.Type, decoder: @escaping ((AnyObject, AnyObject?) -> T)) {
+        let key = "\(T.self)"
+        decoders[key] = { decoder($0, $1) as AnyObject }
+    }
+
+    static func decode<T>(clazz: T.Type, discriminator: String, source: AnyObject) -> T {
+        let key = discriminator;
+        if let decoder = decoders[key] {
+            return decoder(source, nil) as! T
+        } else {
+            fatalError("Source \(source) is not convertible to type \(clazz): Maybe swagger file is insufficient")
+        }
+    }
+
+    static func decode<T>(clazz: [T].Type, source: AnyObject) -> [T] {
+        let array = source as! [AnyObject]
+        return array.map { Decoders.decode(clazz: T.self, source: $0, instance: nil) }
+    }
+
+    static func decode<T, Key: Hashable>(clazz: [Key:T].Type, source: AnyObject) -> [Key:T] {
+        let sourceDictionary = source as! [Key: AnyObject]
+        var dictionary = [Key:T]()
+        for (key, value) in sourceDictionary {
+            dictionary[key] = Decoders.decode(clazz: T.self, source: value, instance: nil)
+        }
+        return dictionary
+    }
+
+    static func decode<T>(clazz: T.Type, source: AnyObject, instance: AnyObject?) -> T {
+        initialize()
+        if T.self is Int32.Type && source is NSNumber {
+            return (source as! NSNumber).int32Value as! T
+        }
+        if T.self is Int64.Type && source is NSNumber {
+            return (source as! NSNumber).int64Value as! T
+        }
+        if T.self is UUID.Type && source is String {
+            return UUID(uuidString: source as! String) as! T
+        }
+        if source is T {
+            return source as! T
+        }
+        if T.self is Data.Type && source is String {
+            return Data(base64Encoded: source as! String) as! T
+        }
+
+        let key = "\(T.self)"
+        if let decoder = decoders[key] {
+           return decoder(source, instance) as! T
+        } else {
+            fatalError("Source \(source) is not convertible to type \(clazz): Maybe swagger file is insufficient")
+        }
+    }
+
+    static func decodeOptional<T>(clazz: T.Type, source: AnyObject?) -> T? {
+        if source is NSNull {
+            return nil
+        }
+        return source.map { (source: AnyObject) -> T in
+            Decoders.decode(clazz: clazz, source: source, instance: nil)
+        }
+    }
+
+    static func decodeOptional<T>(clazz: [T].Type, source: AnyObject?) -> [T]? {
+        if source is NSNull {
+            return nil
+        }
+        return source.map { (someSource: AnyObject) -> [T] in
+            Decoders.decode(clazz: clazz, source: someSource)
+        }
+    }
+
+    static func decodeOptional<T, Key: Hashable>(clazz: [Key:T].Type, source: AnyObject?) -> [Key:T]? {
+        if source is NSNull {
+            return nil
+        }
+        return source.map { (someSource: AnyObject) -> [Key:T] in
+            Decoders.decode(clazz: clazz, source: someSource)
+        }
+    }
+
+    private static var __once: () = {
+        let formatters = [
+            "yyyy-MM-dd",
+            "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            "yyyy-MM-dd HH:mm:ss"
+        ].map { (format: String) -> DateFormatter in
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = format
+            return formatter
+        }
+        // Decoder for Date
+        Decoders.addDecoder(clazz: Date.self) { (source: AnyObject, instance: AnyObject?) -> Date in
+           if let sourceString = source as? String {
+                for formatter in formatters {
+                    if let date = formatter.date(from: sourceString) {
+                        return date
+                    }
+                }
+            }
+            if let sourceInt = source as? Int64 {
+                // treat as a java date
+                return Date(timeIntervalSince1970: Double(sourceInt / 1000) )
+            }
+            fatalError("formatter failed to parse \(source)")
+        } 
+
+        // Decoder for [InlineResponse200]
+        Decoders.addDecoder(clazz: [InlineResponse200].self) { (source: AnyObject, instance: AnyObject?) -> [InlineResponse200] in
+            return Decoders.decode(clazz: [InlineResponse200].self, source: source)
+        }
+        // Decoder for InlineResponse200
+        Decoders.addDecoder(clazz: InlineResponse200.self) { (source: AnyObject, instance: AnyObject?) -> InlineResponse200 in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? InlineResponse200() : instance as! InlineResponse200
+            
+            result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
+            result.hash = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Hash"] as AnyObject?)
+            result.size = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Size"] as AnyObject?)
+            return result
+        }
+    }()
+
+    static fileprivate func initialize() {
+        _ = Decoders.__once
+    }
+}

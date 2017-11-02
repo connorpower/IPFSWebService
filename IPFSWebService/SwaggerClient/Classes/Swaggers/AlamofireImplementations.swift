@@ -8,12 +8,8 @@ import Foundation
 import Alamofire
 
 class AlamofireRequestBuilderFactory: RequestBuilderFactory {
-    func getNonDecodableBuilder<T>() -> RequestBuilder<T>.Type {
+    func getBuilder<T>() -> RequestBuilder<T>.Type {
         return AlamofireRequestBuilder<T>.self
-    }
-
-    func getBuilder<T:Decodable>() -> RequestBuilder<T>.Type {
-        return AlamofireDecodableRequestBuilder<T>.self
     }
 }
 
@@ -60,7 +56,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         let manager = createSessionManager()
         managerStore[managerId] = manager
 
-        let encoding:ParameterEncoding = isBody ? JSONDataEncoding() : URLEncoding()
+        let encoding:ParameterEncoding = isBody ? JSONEncoding() : URLEncoding()
 
         let xMethod = Alamofire.HTTPMethod(rawValue: method)
         let fileKeys = parameters == nil ? [] : parameters!.filter { $1 is NSURL }
@@ -110,99 +106,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
 
     }
 
-    fileprivate func processRequest(request: DataRequest, _ managerId: String, _ completion: @escaping (_ response: Response<T>?, _ error: Error?) -> Void) {
-        if let credential = self.credential {
-            request.authenticate(usingCredential: credential)
-        }
-
-        let cleanupRequest = {
-            _ = managerStore.removeValue(forKey: managerId)
-        }
-
-        let validatedRequest = request.validate()
-
-        switch T.self {
-        case is String.Type:
-            validatedRequest.responseString(completionHandler: { (stringResponse) in
-                cleanupRequest()
-
-                if stringResponse.result.isFailure {
-                    completion(
-                        nil,
-                        ErrorResponse.Error(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error as Error!)
-                    )
-                    return
-                }
-
-                completion(
-                    Response(
-                        response: stringResponse.response!,
-                        body: ((stringResponse.result.value ?? "") as! T)
-                    ),
-                    nil
-                )
-            })
-        case is Void.Type:
-            validatedRequest.responseData(completionHandler: { (voidResponse) in
-                cleanupRequest()
-
-                if voidResponse.result.isFailure {
-                    completion(
-                        nil,
-                        ErrorResponse.Error(voidResponse.response?.statusCode ?? 500, voidResponse.data, voidResponse.result.error!)
-                    )
-                    return
-                }
-
-                completion(
-                    Response(
-                        response: voidResponse.response!,
-                        body: nil),
-                    nil
-                )
-            })
-        default:
-            validatedRequest.responseData(completionHandler: { (dataResponse) in
-                cleanupRequest()
-
-                if (dataResponse.result.isFailure) {
-                    completion(
-                        nil,
-                        ErrorResponse.Error(dataResponse.response?.statusCode ?? 500, dataResponse.data, dataResponse.result.error!)
-                    )
-                    return
-                }
-
-                completion(
-                    Response(
-                        response: dataResponse.response!,
-                        body: (dataResponse.data as! T)
-                    ),
-                    nil
-                )
-            })
-        }
-    }
-
-    open func buildHeaders() -> [String: String] {
-        var httpHeaders = SessionManager.defaultHTTPHeaders
-        for (key, value) in self.headers {
-            httpHeaders[key] = value
-        }
-        return httpHeaders
-    }
-}
-
-public enum AlamofireDecodableRequestBuilderError: Error {
-    case emptyDataResponse
-    case nilHTTPResponse
-    case jsonDecoding(DecodingError)
-    case generalError(Error)
-}
-
-open class AlamofireDecodableRequestBuilder<T:Decodable>: AlamofireRequestBuilder<T> {
-
-    override fileprivate func processRequest(request: DataRequest, _ managerId: String, _ completion: @escaping (_ response: Response<T>?, _ error: Error?) -> Void) {
+    private func processRequest(request: DataRequest, _ managerId: String, _ completion: @escaping (_ response: Response<T>?, _ error: Error?) -> Void) {
         if let credential = self.credential {
             request.authenticate(usingCredential: credential)
         }
@@ -274,34 +178,46 @@ open class AlamofireDecodableRequestBuilder<T:Decodable>: AlamofireRequestBuilde
                 )
             })
         default:
-            validatedRequest.responseData(completionHandler: { (dataResponse: DataResponse<Data>) in
+            validatedRequest.responseJSON(options: .allowFragments) { response in
                 cleanupRequest()
 
-                guard dataResponse.result.isSuccess else {
-                    completion(nil, ErrorResponse.Error(dataResponse.response?.statusCode ?? 500, dataResponse.data, dataResponse.result.error!))
+                if response.result.isFailure {
+                    completion(nil, ErrorResponse.Error(response.response?.statusCode ?? 500, response.data, response.result.error!))
                     return
                 }
 
-                guard let data = dataResponse.data, !data.isEmpty else {
-                    completion(nil, ErrorResponse.Error(-1, nil, AlamofireDecodableRequestBuilderError.emptyDataResponse))
+                // handle HTTP 204 No Content
+                // NSNull would crash decoders
+                if response.response?.statusCode == 204 && response.result.value is NSNull{
+                    completion(nil, nil)
+                    return;
+                }
+
+                if () is T {
+                    completion(Response(response: response.response!, body: (() as! T)), nil)
+                    return
+                }
+                if let json: Any = response.result.value {
+                    let body = Decoders.decode(clazz: T.self, source: json as AnyObject, instance: nil)
+                    completion(Response(response: response.response!, body: body), nil)
+                    return
+                } else if "" is T {
+                    // swagger-parser currently doesn't support void, which will be fixed in future swagger-parser release
+                    // https://github.com/swagger-api/swagger-parser/pull/34
+                    completion(Response(response: response.response!, body: ("" as! T)), nil)
                     return
                 }
 
-                guard let httpResponse = dataResponse.response else {
-                    completion(nil, ErrorResponse.Error(-2, nil, AlamofireDecodableRequestBuilderError.nilHTTPResponse))
-                    return
-                }
-
-                var responseObj: Response<T>? = nil
-
-                let decodeResult: (decodableObj: T?, error: Error?) = CodableHelper.decode(T.self, from: data)
-                if decodeResult.error == nil {
-                    responseObj = Response(response: httpResponse, body: decodeResult.decodableObj)
-                }
-
-                completion(responseObj, decodeResult.error)
-            })
+                completion(nil, ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "unreacheable code"])))
+            }
         }
     }
 
+    open func buildHeaders() -> [String: String] {
+        var httpHeaders = SessionManager.defaultHTTPHeaders
+        for (key, value) in self.headers {
+            httpHeaders[key] = value
+        }
+        return httpHeaders
+    }
 }

@@ -10,12 +10,12 @@ import Alamofire
 
 
 
-open class DefaultAPI {
+open class DefaultAPI: APIBase {
     /**
      Add a file or directory to ipfs.
      
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  (optional)
-     - parameter recursive: (query)  (optional)
+     - parameter recursive: (query) Add directory paths recursively. Defaults to false.  (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
     open class func add(file: URL? = nil, recursive: Bool? = nil, completion: @escaping ((_ data: InlineResponse200?,_ error: Error?) -> Void)) {
@@ -35,7 +35,7 @@ open class DefaultAPI {
 }}]
      
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  (optional)
-     - parameter recursive: (query)  (optional)
+     - parameter recursive: (query) Add directory paths recursively. Defaults to false.  (optional)
 
      - returns: RequestBuilder<InlineResponse200> 
      */

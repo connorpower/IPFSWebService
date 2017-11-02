@@ -3,7 +3,9 @@ use_frameworks!
 
 target 'Example' do
 
+  platform :osx, '10.13'
+
   pod 'Alamofire', '~> 4.5'
-  pod 'IPFSWebService', :path => '../IPFSWebService'
+  pod 'IPFSWebService', :path => '../'
 
 end

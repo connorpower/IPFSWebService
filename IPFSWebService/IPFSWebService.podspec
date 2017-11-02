@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name        = 'IPFS-API'
+  s.name        = 'IPFSWebService'
   s.version     = '1.0.0'
   s.summary     = 'Defines and versions the HTTP based IPFS interface.'
   s.description = <<-DESC
@@ -9,8 +9,8 @@ Pod::Spec.new do |s|
   iOS clients need only include this API as a cocoapod dependency.
                   DESC
 
-  s.homepage  = "https://github.com/connorpower/IPFS-API"
-  s.source    = { :git => 'git@github.com:connorpower/IPFS-API.git', :tag => s.version.to_s }
+  s.homepage  = "https://github.com/connorpower/IPFSWebService"
+  s.source    = { :git => 'git@github.com:connorpower/IPFSWebService.git', :tag => s.version.to_s }
   s.authors   = 'Connor Power'
   s.license   = 'Proprietary'
 

@@ -6,7 +6,7 @@ API framework as a cocoapod dependency.
 
 ## Development
 
-This pod uses [Semantical Versioning](semver.org) as outlined below:
+This pod uses [Semantical Versioning](http://semver.org) as outlined below:
 
 - **1.x.x**: Major versions. Represents breaking changes in the API.
 - **1.1.x**: Minor versions. Represents non breaking API changes (such as new

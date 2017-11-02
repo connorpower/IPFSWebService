@@ -1,7 +1,7 @@
 swagger: "2.0"
 
 info:
-  title: IPFS API
+  title: IPFS-API
   description:
     This specification defines a minimalist subset of the HTTP API for IPFS.
   version: 1.0.0

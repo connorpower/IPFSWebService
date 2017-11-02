@@ -1,0 +1,52 @@
+swagger: "2.0"
+
+info:
+  title: IPFS API
+  description:
+    This specification defines a minimalist subset of the HTTP API for IPFS.
+  version: 1.0.0
+
+host: 127.0.0.1:5001
+basePath: /api/v0
+schemes:
+  - http
+
+paths:
+
+  /add:
+    post:
+      summary:
+        Add a file or directory to ipfs.
+      operationId: add
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: |
+            This endpoint expects a file in the body of the request
+            as ‘multipart/form-data’.
+          required: false
+        - in: query
+          name: recursive
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              Name:
+                type: string
+                example: "The Cathedral and the Bazaar.pdf"
+              Hash:
+                type: string
+                example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+              Bytes:
+                type: integer
+                format: int64
+                example: 193960

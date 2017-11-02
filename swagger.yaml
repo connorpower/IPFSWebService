@@ -33,6 +33,8 @@ paths:
         - in: query
           name: recursive
           type: boolean
+          description: |
+            Add directory paths recursively. Defaults to false.
           required: false
       responses:
         200:
@@ -48,4 +50,4 @@ paths:
                 example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
               Size:
                 type: string
-                example: 193960
+                example: "193960"

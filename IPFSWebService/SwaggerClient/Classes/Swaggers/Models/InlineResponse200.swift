@@ -12,7 +12,7 @@ open class InlineResponse200: Codable {
 
     public var name: String?
     public var hash: String?
-    public var size: Int64?
+    public var size: String?
 
     public init() {}
 

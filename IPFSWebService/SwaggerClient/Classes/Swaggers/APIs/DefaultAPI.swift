@@ -29,7 +29,7 @@ open class DefaultAPI {
      Add a file or directory to ipfs.
      - POST /add
      - examples: [{contentType=application/json, example={
-  "Size" : 193960,
+  "Size" : "193960",
   "Hash" : "QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7",
   "Name" : "The Cathedral and the Bazaar.pdf"
 }}]

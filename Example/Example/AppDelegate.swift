@@ -12,7 +12,7 @@ import IPFSWebService
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    let file = URL(fileURLWithPath: "/Users/connorpower/Desktop/The Cathedral and the Bazaar.pdf")
+    let file = Bundle.main.url(forResource: "The Cathedral and the Bazaar", withExtension: ".pdf")
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         testUpload()

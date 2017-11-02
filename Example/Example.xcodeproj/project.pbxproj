@@ -11,6 +11,7 @@
 		D27551161FABB12C00A084E7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27551151FABB12C00A084E7 /* ViewController.swift */; };
 		D27551181FABB12C00A084E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D27551171FABB12C00A084E7 /* Assets.xcassets */; };
 		D275511B1FABB12C00A084E7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D27551191FABB12C00A084E7 /* Main.storyboard */; };
+		D27551241FABC71300A084E7 /* The Cathedral and the Bazaar.pdf in Resources */ = {isa = PBXBuildFile; fileRef = D27551231FABC70100A084E7 /* The Cathedral and the Bazaar.pdf */; };
 		FD1CA77FF86DAED2773B58E7 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45744B09C0D5FE7EC4E75153 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		D275511A1FABB12C00A084E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D275511C1FABB12C00A084E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D275511D1FABB12C00A084E7 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
+		D27551231FABC70100A084E7 /* The Cathedral and the Bazaar.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Cathedral and the Bazaar.pdf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +79,7 @@
 		D27551121FABB12C00A084E7 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				D27551231FABC70100A084E7 /* The Cathedral and the Bazaar.pdf */,
 				D27551131FABB12C00A084E7 /* AppDelegate.swift */,
 				D27551151FABB12C00A084E7 /* ViewController.swift */,
 				D27551171FABB12C00A084E7 /* Assets.xcassets */,
@@ -150,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D27551181FABB12C00A084E7 /* Assets.xcassets in Resources */,
+				D27551241FABC71300A084E7 /* The Cathedral and the Bazaar.pdf in Resources */,
 				D275511B1FABB12C00A084E7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

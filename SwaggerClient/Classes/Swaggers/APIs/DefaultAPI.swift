@@ -61,7 +61,7 @@ open class DefaultAPI: APIBase {
      - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func callGet(arg: String, completion: @escaping ((_ data: URL?,_ error: Error?) -> Void)) {
+    open class func callGet(arg: String, completion: @escaping ((_ data: Data?,_ error: Error?) -> Void)) {
         callGetWithRequestBuilder(arg: arg).execute { (response, error) -> Void in
             completion(response?.body, error);
         }
@@ -75,9 +75,9 @@ open class DefaultAPI: APIBase {
      
      - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
 
-     - returns: RequestBuilder<URL> 
+     - returns: RequestBuilder<Data> 
      */
-    open class func callGetWithRequestBuilder(arg: String) -> RequestBuilder<URL> {
+    open class func callGetWithRequestBuilder(arg: String) -> RequestBuilder<Data> {
         let path = "/get"
         let URLString = SwaggerClientAPI.basePath + path
         let parameters: [String:Any]? = nil
@@ -88,7 +88,7 @@ open class DefaultAPI: APIBase {
         ])
         
 
-        let requestBuilder: RequestBuilder<URL>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<Data>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }

@@ -58,7 +58,7 @@ class Decoders {
         return array.map { Decoders.decode(clazz: T.self, source: $0, instance: nil) }
     }
 
-    static func decode<T, Key: Hashable>(clazz: [Key:T].Type, source: AnyObject) -> [Key:T] {
+    static func decode<T, Key>(clazz: [Key:T].Type, source: AnyObject) -> [Key:T] {
         let sourceDictionary = source as! [Key: AnyObject]
         var dictionary = [Key:T]()
         for (key, value) in sourceDictionary {
@@ -111,7 +111,7 @@ class Decoders {
         }
     }
 
-    static func decodeOptional<T, Key: Hashable>(clazz: [Key:T].Type, source: AnyObject?) -> [Key:T]? {
+    static func decodeOptional<T, Key>(clazz: [Key:T].Type, source: AnyObject?) -> [Key:T]? {
         if source is NSNull {
             return nil
         }
@@ -150,18 +150,47 @@ class Decoders {
             fatalError("formatter failed to parse \(source)")
         } 
 
-        // Decoder for [InlineResponse200]
-        Decoders.addDecoder(clazz: [InlineResponse200].self) { (source: AnyObject, instance: AnyObject?) -> [InlineResponse200] in
-            return Decoders.decode(clazz: [InlineResponse200].self, source: source)
+        // Decoder for [AddResponse]
+        Decoders.addDecoder(clazz: [AddResponse].self) { (source: AnyObject, instance: AnyObject?) -> [AddResponse] in
+            return Decoders.decode(clazz: [AddResponse].self, source: source)
         }
-        // Decoder for InlineResponse200
-        Decoders.addDecoder(clazz: InlineResponse200.self) { (source: AnyObject, instance: AnyObject?) -> InlineResponse200 in
+        // Decoder for AddResponse
+        Decoders.addDecoder(clazz: AddResponse.self) { (source: AnyObject, instance: AnyObject?) -> AddResponse in
             let sourceDictionary = source as! [AnyHashable: Any]
-            let result = instance == nil ? InlineResponse200() : instance as! InlineResponse200
+            let result = instance == nil ? AddResponse() : instance as! AddResponse
             
             result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
             result.hash = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Hash"] as AnyObject?)
             result.size = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Size"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [PublishResponse]
+        Decoders.addDecoder(clazz: [PublishResponse].self) { (source: AnyObject, instance: AnyObject?) -> [PublishResponse] in
+            return Decoders.decode(clazz: [PublishResponse].self, source: source)
+        }
+        // Decoder for PublishResponse
+        Decoders.addDecoder(clazz: PublishResponse.self) { (source: AnyObject, instance: AnyObject?) -> PublishResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? PublishResponse() : instance as! PublishResponse
+            
+            result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
+            result.value = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Value"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [ResolveResponse]
+        Decoders.addDecoder(clazz: [ResolveResponse].self) { (source: AnyObject, instance: AnyObject?) -> [ResolveResponse] in
+            return Decoders.decode(clazz: [ResolveResponse].self, source: source)
+        }
+        // Decoder for ResolveResponse
+        Decoders.addDecoder(clazz: ResolveResponse.self) { (source: AnyObject, instance: AnyObject?) -> ResolveResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? ResolveResponse() : instance as! ResolveResponse
+            
+            result.path = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Path"] as AnyObject?)
             return result
         }
     }()

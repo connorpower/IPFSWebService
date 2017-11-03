@@ -25,7 +25,6 @@
 		D27551171FABB12C00A084E7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D275511A1FABB12C00A084E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D275511C1FABB12C00A084E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D275511D1FABB12C00A084E7 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		D27551231FABC70100A084E7 /* The Cathedral and the Bazaar.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Cathedral and the Bazaar.pdf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,7 +84,6 @@
 				D27551171FABB12C00A084E7 /* Assets.xcassets */,
 				D27551191FABB12C00A084E7 /* Main.storyboard */,
 				D275511C1FABB12C00A084E7 /* Info.plist */,
-				D275511D1FABB12C00A084E7 /* Example.entitlements */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -351,7 +349,6 @@
 			baseConfigurationReference = 3A38295406836EA7B6E6F027 /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = MJ4T58LF5M;
@@ -368,7 +365,6 @@
 			baseConfigurationReference = 95E7AEE1E823F3FB14D38E44 /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = MJ4T58LF5M;

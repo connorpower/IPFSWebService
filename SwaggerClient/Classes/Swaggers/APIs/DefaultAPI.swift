@@ -14,12 +14,11 @@ open class DefaultAPI: APIBase {
     /**
      Add a file or directory to ipfs.
      
-     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  (optional)
-     - parameter recursive: (query) Add directory paths recursively. Defaults to false.  (optional)
+     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func add(file: URL? = nil, recursive: Bool? = nil, completion: @escaping ((_ data: InlineResponse200?,_ error: Error?) -> Void)) {
-        addWithRequestBuilder(file: file, recursive: recursive).execute { (response, error) -> Void in
+    open class func add(file: URL, completion: @escaping ((_ data: AddResponse?,_ error: Error?) -> Void)) {
+        addWithRequestBuilder(file: file).execute { (response, error) -> Void in
             completion(response?.body, error);
         }
     }
@@ -34,12 +33,11 @@ open class DefaultAPI: APIBase {
   "Name" : "The Cathedral and the Bazaar.pdf"
 }}]
      
-     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  (optional)
-     - parameter recursive: (query) Add directory paths recursively. Defaults to false.  (optional)
+     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
 
-     - returns: RequestBuilder<InlineResponse200> 
+     - returns: RequestBuilder<AddResponse> 
      */
-    open class func addWithRequestBuilder(file: URL? = nil, recursive: Bool? = nil) -> RequestBuilder<InlineResponse200> {
+    open class func addWithRequestBuilder(file: URL) -> RequestBuilder<AddResponse> {
         let path = "/add"
         let URLString = SwaggerClientAPI.basePath + path
         let formParams: [String:Any?] = [
@@ -50,14 +48,136 @@ open class DefaultAPI: APIBase {
         let parameters = APIHelper.convertBoolToString(nonNullParameters)
 
         let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<AddResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     Download IPFS objects.
+     
+     - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func callGet(arg: String, completion: @escaping ((_ data: Data?,_ error: Error?) -> Void)) {
+        callGetWithRequestBuilder(arg: arg).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     Download IPFS objects.
+     - GET /get
+     - examples: [{output=none}]
+     
+     - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
+
+     - returns: RequestBuilder<Data> 
+     */
+    open class func callGetWithRequestBuilder(arg: String) -> RequestBuilder<Data> {
+        let path = "/get"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
         url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg
+        ])
+        
+
+        let requestBuilder: RequestBuilder<Data>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) ipfs path of the object to be published.  
+     - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func publish(arg: String, key: String? = nil, completion: @escaping ((_ data: PublishResponse?,_ error: Error?) -> Void)) {
+        publishWithRequestBuilder(arg: arg, key: key).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     - GET /name/publish
+     - examples: [{contentType=application/json, example={
+  "Value" : "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7",
+  "Name" : "QmXXcnBhtXB7dFFxwEyzG1YctDU8ZpcKweQcKp1JHXktn8"
+}}]
+     
+     - parameter arg: (query) ipfs path of the object to be published.  
+     - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
+
+     - returns: RequestBuilder<PublishResponse> 
+     */
+    open class func publishWithRequestBuilder(arg: String, key: String? = nil) -> RequestBuilder<PublishResponse> {
+        let path = "/name/publish"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg, 
+            "key": key
+        ])
+        
+
+        let requestBuilder: RequestBuilder<PublishResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) The IPNS name to resolve.  
+     - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func resolve(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: ResolveResponse?,_ error: Error?) -> Void)) {
+        resolveWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     - GET /name/resolve
+     - examples: [{contentType=application/json, example={
+  "Path" : "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7"
+}}]
+     
+     - parameter arg: (query) The IPNS name to resolve.  
+     - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
+
+     - returns: RequestBuilder<ResolveResponse> 
+     */
+    open class func resolveWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<ResolveResponse> {
+        let path = "/name/resolve"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg, 
             "recursive": recursive
         ])
         
 
-        let requestBuilder: RequestBuilder<InlineResponse200>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<ResolveResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }
 
 }

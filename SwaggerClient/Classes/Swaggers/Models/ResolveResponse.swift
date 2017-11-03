@@ -8,7 +8,6 @@
 import Foundation
 
 
-/** The object which represents a response from the server. */
 open class ResolveResponse: JSONEncodable {
 
     /** The path to which the name resolved.  */

@@ -8,7 +8,6 @@
 import Foundation
 
 
-/** The object which represents a response from the server. */
 open class PublishResponse: JSONEncodable {
 
     /** The name under which the value was published. By default, this will be the peer ID (i.e. the hash of the node&#39;s public key).  */

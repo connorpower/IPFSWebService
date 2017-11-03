@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = 'IPFSWebService'
-  s.version     = '0.1.0'
+  s.version     = '0.2.0'
   s.summary     = 'Defines and versions the HTTP based IPFS interface.'
   s.description = <<-DESC
   The API for communication with an IPFS server is defined and versioned by

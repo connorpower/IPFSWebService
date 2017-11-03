@@ -150,14 +150,14 @@ class Decoders {
             fatalError("formatter failed to parse \(source)")
         } 
 
-        // Decoder for [InlineResponse200]
-        Decoders.addDecoder(clazz: [InlineResponse200].self) { (source: AnyObject, instance: AnyObject?) -> [InlineResponse200] in
-            return Decoders.decode(clazz: [InlineResponse200].self, source: source)
+        // Decoder for [AddResponse]
+        Decoders.addDecoder(clazz: [AddResponse].self) { (source: AnyObject, instance: AnyObject?) -> [AddResponse] in
+            return Decoders.decode(clazz: [AddResponse].self, source: source)
         }
-        // Decoder for InlineResponse200
-        Decoders.addDecoder(clazz: InlineResponse200.self) { (source: AnyObject, instance: AnyObject?) -> InlineResponse200 in
+        // Decoder for AddResponse
+        Decoders.addDecoder(clazz: AddResponse.self) { (source: AnyObject, instance: AnyObject?) -> AddResponse in
             let sourceDictionary = source as! [AnyHashable: Any]
-            let result = instance == nil ? InlineResponse200() : instance as! InlineResponse200
+            let result = instance == nil ? AddResponse() : instance as! AddResponse
             
             result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
             result.hash = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Hash"] as AnyObject?)

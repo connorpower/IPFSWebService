@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (4.5.1)
-  - IPFSWebService (0.0.1):
+  - IPFSWebService (0.1.0):
     - Alamofire (~> 4.5)
 
 DEPENDENCIES:
@@ -13,7 +13,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
-  IPFSWebService: 071512e3f63435706f5a56c19576d67962a4a157
+  IPFSWebService: 0854391521e5f506aa2b716a54fb0cc0a6a357ed
 
 PODFILE CHECKSUM: 61ed0b4ea744697cba534ae39b8006c4b4575530
 

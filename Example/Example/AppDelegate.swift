@@ -13,10 +13,43 @@ import Quartz
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    let keyPairName = "My Test Keypair"
     let fileURL = Bundle.main.url(forResource: "The Cathedral and the Bazaar", withExtension: ".pdf")!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        testUpload(of: fileURL)
+        testKeyPairCreation()
+    }
+
+    private func testKeyPairCreation() {
+        print("Creating IPNS keypair...\n")
+
+        DefaultAPI.keygen(arg: keyPairName, type: .rsa, size: 2048) { (response, error) in
+            if let error = error {
+                fatalError("\(error)")
+            } else if let response = response {
+                print("Keypair created.\n")
+                print("  Type: rsa\n  Size: 2048 bits\n  Name: \(response.name!)\n  ID: \(response.id!)\n")
+                self.testKeyPairRetrieval()
+            }
+        }
+    }
+
+    private func testKeyPairRetrieval() {
+        print("Retrieving list of local keypairs...\n")
+
+        DefaultAPI.listKeys { (response, error) in
+            if let error = error {
+                fatalError("\(error)")
+            } else if let response = response {
+                print("Keypairs found.")
+                for key in response.keys! {
+                    print("  \"\(key.name!)\": \(key.id!)")
+                }
+                print("")
+
+                self.testUpload(of: self.fileURL)
+            }
+        }
     }
 
     private func testUpload(of file: URL) {
@@ -33,9 +66,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func testPublish(of hash: String) {
-        print("Publishing file...\n")
+        print("Publishing file under key \"\(keyPairName)\"...\n")
 
-        DefaultAPI.publish(arg: hash) { (response, error) in
+        DefaultAPI.publish(arg: hash, key: keyPairName) { (response, error) in
             if let error = error {
                 fatalError("\(error)")
             } else if let response = response {
@@ -84,6 +117,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("File compared to local counterpart.\n  Is PDF with same number of pages: ✅\n")
         } else {
             print("File compared to local counterpart.\n  Is PDF with same number of pages: ❌\n")
+        }
+
+        testKeyPairRemoval()
+    }
+
+    private func testKeyPairRemoval() {
+        print("Removing keypair \"\(keyPairName)\"...\n")
+
+        DefaultAPI.removeKey(arg: keyPairName) { (response, error) in
+            if let error = error {
+                fatalError("\(error)")
+            } else if let response = response {
+                print("Keypair removed.")
+                for key in response.keys! {
+                    print("  \"\(key.name!)\": \(key.id!)")
+                }
+                print("")
+            }
         }
     }
 

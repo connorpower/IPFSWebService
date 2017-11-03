@@ -164,6 +164,35 @@ class Decoders {
             result.size = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Size"] as AnyObject?)
             return result
         }
+
+
+        // Decoder for [PublishResponse]
+        Decoders.addDecoder(clazz: [PublishResponse].self) { (source: AnyObject, instance: AnyObject?) -> [PublishResponse] in
+            return Decoders.decode(clazz: [PublishResponse].self, source: source)
+        }
+        // Decoder for PublishResponse
+        Decoders.addDecoder(clazz: PublishResponse.self) { (source: AnyObject, instance: AnyObject?) -> PublishResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? PublishResponse() : instance as! PublishResponse
+            
+            result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
+            result.value = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Value"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [ResolveResponse]
+        Decoders.addDecoder(clazz: [ResolveResponse].self) { (source: AnyObject, instance: AnyObject?) -> [ResolveResponse] in
+            return Decoders.decode(clazz: [ResolveResponse].self, source: source)
+        }
+        // Decoder for ResolveResponse
+        Decoders.addDecoder(clazz: ResolveResponse.self) { (source: AnyObject, instance: AnyObject?) -> ResolveResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? ResolveResponse() : instance as! ResolveResponse
+            
+            result.path = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Path"] as AnyObject?)
+            return result
+        }
     }()
 
     static fileprivate func initialize() {

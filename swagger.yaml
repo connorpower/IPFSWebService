@@ -115,11 +115,93 @@ paths:
           schema:
             $ref: '#/definitions/ResolveResponse'
 
+  /key/gen:
+    get:
+      summary:
+        Create a new keypair
+      operationId: keygen
+      parameters:
+        - in: query
+          name: arg
+          description: Name of key to create.
+          type: string
+          required: true
+        - in: query
+          name: type
+          description: Type of the key to create.
+          type: string
+          enum:
+            - rsa
+            - ed25519
+          required: true
+        - in: query
+          name: size
+          description: Size of the key to generate
+          type: integer
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/KeygenResponse'
+
+  /key/list:
+    get:
+      summary:
+        List all local keypairs
+      operationId: listKeys
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ListKeysResponse'
+
+  /key/rm:
+    get:
+      summary:
+        List all local keypairs
+      operationId: removeKey
+      parameters:
+        - in: query
+          name: arg
+          description: Name of key to remove.
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/RemoveKeyResponse'
+
 definitions:
 
+    Key:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the key as given to the keygen API.
+          example: "Max Musterman"
+        Id:
+          type: string
+          description: The generated key for usage with IPNS.
+          example: "QmerDzHK1aRgh9dP1KxZXqEBFgQonRnxWfqeHTvt8h1PAm"
+      required:
+      - Name
+      - Id
+
+    KeyList:
+      type: object
+      properties:
+        Keys:
+          type: array
+          description: A list of keypairs.
+          items:
+            $ref: '#/definitions/Key'
+      required:
+      - Keys
+
     AddResponse:
-      description:
-        The object which represents a response from the server.
       type: object
       properties:
         Name:
@@ -127,7 +209,7 @@ definitions:
           example: "The Cathedral and the Bazaar.pdf"
         Hash:
           type: string
-          example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+          example: "QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7"
         Size:
           type: string
           example: "193960"
@@ -137,8 +219,6 @@ definitions:
       - Size
 
     PublishResponse:
-      description:
-        The object which represents a response from the server.
       type: object
       properties:
         Name:
@@ -146,25 +226,38 @@ definitions:
           description: |
             The name under which the value was published. By default, this
             will be the peer ID (i.e. the hash of the node's public key).
-          example: QmXXcnBhtXB7dFFxwEyzG1YctDU8ZpcKweQcKp1JHXktn8
+          example: "QmXXcnBhtXB7dFFxwEyzG1YctDU8ZpcKweQcKp1JHXktn8"
         Value:
           type: string
           description: |
             The resource to which the name now resolves.
-          example: /ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+          example: "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7"
       required:
       - Name
       - Value
 
     ResolveResponse:
-      description:
-        The object which represents a response from the server.
       type: object
       properties:
         Path:
           type: string
           description: |
             The path to which the name resolved.
-          example: /ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+          example: "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7"
       required:
       - Path
+
+    KeygenResponse:
+      allOf:
+        - $ref: '#/definitions/Key'
+        - type: object
+
+    ListKeysResponse:
+      allOf:
+        - $ref: '#/definitions/KeyList'
+        - type: object
+
+    RemoveKeyResponse:
+      allOf:
+        - $ref: '#/definitions/KeyList'
+        - type: object

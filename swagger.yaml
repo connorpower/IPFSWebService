@@ -11,6 +11,11 @@ basePath: /api/v0
 schemes:
   - http
 
+consumes:
+  - application/json
+produces:
+  - application/json
+
 paths:
 
   /add:
@@ -20,8 +25,6 @@ paths:
       operationId: add
       consumes:
         - multipart/form-data
-      produces:
-        - application/json
       parameters:
         - in: formData
           name: file
@@ -29,25 +32,139 @@ paths:
           description: |
             This endpoint expects a file in the body of the request
             as ‘multipart/form-data’.
-          required: false
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AddResponse'
+
+  /get:
+    get:
+      summary:
+        Download IPFS objects.
+      operationId: get
+      produces:
+        - text/plain
+      parameters:
         - in: query
-          name: recursive
-          type: boolean
+          name: arg
+          type: string
           description: |
-            Add directory paths recursively. Defaults to false.
+             The path to the IPFS object(s) to be outputted.
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+            format: binary
+
+  /name/publish:
+    get:
+      summary:
+        IPNS is a PKI namespace, where names are the hashes of public keys, and
+        the private key enables publishing new (signed) values. In both publish
+        and resolve, the default name used is the node's own PeerID,
+        which is the hash of its public key.
+      operationId: publish
+      parameters:
+        - in: query
+          name: arg
+          type: string
+          description: |
+              ipfs path of the object to be published.
+          required: true
+        - in: query
+          name: key
+          type: string
+          description: |
+              Name of the key to be used, as listed by ‘ipfs key list’.
+              Default is “self”.
           required: false
       responses:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              Name:
-                type: string
-                example: "The Cathedral and the Bazaar.pdf"
-              Hash:
-                type: string
-                example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
-              Size:
-                type: string
-                example: "193960"
+            $ref: '#/definitions/PublishResponse'
+
+  /name/resolve:
+    get:
+      summary:
+        IPNS is a PKI namespace, where names are the hashes of public keys, and
+        the private key enables publishing new (signed) values. In both publish
+        and resolve, the default name used is the node's own PeerID,
+        which is the hash of its public key.
+      operationId: resolve
+      parameters:
+        - in: query
+          name: arg
+          type: string
+          description: |
+              The IPNS name to resolve.
+          required: true
+        - in: query
+          name: recursive
+          type: boolean
+          description: |
+              Resolve until the result is not an IPNS name. Default is false.
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ResolveResponse'
+
+definitions:
+
+    AddResponse:
+      description:
+        The object which represents a response from the server.
+      type: object
+      properties:
+        Name:
+          type: string
+          example: "The Cathedral and the Bazaar.pdf"
+        Hash:
+          type: string
+          example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+        Size:
+          type: string
+          example: "193960"
+      required:
+      - Name
+      - Hash
+      - Size
+
+    PublishResponse:
+      description:
+        The object which represents a response from the server.
+      type: object
+      properties:
+        Name:
+          type: string
+          description: |
+            The name under which the value was published. By default, this
+            will be the peer ID (i.e. the hash of the node's public key).
+          example: QmXXcnBhtXB7dFFxwEyzG1YctDU8ZpcKweQcKp1JHXktn8
+        Value:
+          type: string
+          description: |
+            The resource to which the name now resolves.
+          example: /ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+      required:
+      - Name
+      - Value
+
+    ResolveResponse:
+      description:
+        The object which represents a response from the server.
+      type: object
+      properties:
+        Path:
+          type: string
+          description: |
+            The path to which the name resolved.
+          example: /ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+      required:
+      - Path

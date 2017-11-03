@@ -29,25 +29,30 @@ paths:
           description: |
             This endpoint expects a file in the body of the request
             as ‘multipart/form-data’.
-          required: false
-        - in: query
-          name: recursive
-          type: boolean
-          description: |
-            Add directory paths recursively. Defaults to false.
-          required: false
+          required: true
       responses:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              Name:
-                type: string
-                example: "The Cathedral and the Bazaar.pdf"
-              Hash:
-                type: string
-                example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
-              Size:
-                type: string
-                example: "193960"
+            $ref: '#/definitions/AddResponse'
+
+definitions:
+
+    AddResponse:
+      description:
+        The object which represents a response from the server.
+      type: object
+      properties:
+        Name:
+          type: string
+          example: "The Cathedral and the Bazaar.pdf"
+        Hash:
+          type: string
+          example: QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7
+        Size:
+          type: string
+          example: "193960"
+      required:
+      - Name
+      - Hash
+      - Size

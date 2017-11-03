@@ -166,6 +166,35 @@ class Decoders {
         }
 
 
+        // Decoder for [Key]
+        Decoders.addDecoder(clazz: [Key].self) { (source: AnyObject, instance: AnyObject?) -> [Key] in
+            return Decoders.decode(clazz: [Key].self, source: source)
+        }
+        // Decoder for Key
+        Decoders.addDecoder(clazz: Key.self) { (source: AnyObject, instance: AnyObject?) -> Key in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? Key() : instance as! Key
+            
+            result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
+            result.id = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Id"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [KeyList]
+        Decoders.addDecoder(clazz: [KeyList].self) { (source: AnyObject, instance: AnyObject?) -> [KeyList] in
+            return Decoders.decode(clazz: [KeyList].self, source: source)
+        }
+        // Decoder for KeyList
+        Decoders.addDecoder(clazz: KeyList.self) { (source: AnyObject, instance: AnyObject?) -> KeyList in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? KeyList() : instance as! KeyList
+            
+            result.keys = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["Keys"] as AnyObject?)
+            return result
+        }
+
+
         // Decoder for [PublishResponse]
         Decoders.addDecoder(clazz: [PublishResponse].self) { (source: AnyObject, instance: AnyObject?) -> [PublishResponse] in
             return Decoders.decode(clazz: [PublishResponse].self, source: source)
@@ -191,6 +220,49 @@ class Decoders {
             let result = instance == nil ? ResolveResponse() : instance as! ResolveResponse
             
             result.path = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Path"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [KeygenResponse]
+        Decoders.addDecoder(clazz: [KeygenResponse].self) { (source: AnyObject, instance: AnyObject?) -> [KeygenResponse] in
+            return Decoders.decode(clazz: [KeygenResponse].self, source: source)
+        }
+        // Decoder for KeygenResponse
+        Decoders.addDecoder(clazz: KeygenResponse.self) { (source: AnyObject, instance: AnyObject?) -> KeygenResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? KeygenResponse() : instance as! KeygenResponse
+            
+            result.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Name"] as AnyObject?)
+            result.id = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Id"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [ListKeysResponse]
+        Decoders.addDecoder(clazz: [ListKeysResponse].self) { (source: AnyObject, instance: AnyObject?) -> [ListKeysResponse] in
+            return Decoders.decode(clazz: [ListKeysResponse].self, source: source)
+        }
+        // Decoder for ListKeysResponse
+        Decoders.addDecoder(clazz: ListKeysResponse.self) { (source: AnyObject, instance: AnyObject?) -> ListKeysResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? ListKeysResponse() : instance as! ListKeysResponse
+            
+            result.keys = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["Keys"] as AnyObject?)
+            return result
+        }
+
+
+        // Decoder for [RemoveKeyResponse]
+        Decoders.addDecoder(clazz: [RemoveKeyResponse].self) { (source: AnyObject, instance: AnyObject?) -> [RemoveKeyResponse] in
+            return Decoders.decode(clazz: [RemoveKeyResponse].self, source: source)
+        }
+        // Decoder for RemoveKeyResponse
+        Decoders.addDecoder(clazz: RemoveKeyResponse.self) { (source: AnyObject, instance: AnyObject?) -> RemoveKeyResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? RemoveKeyResponse() : instance as! RemoveKeyResponse
+            
+            result.keys = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["Keys"] as AnyObject?)
             return result
         }
     }()

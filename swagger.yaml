@@ -57,7 +57,8 @@ paths:
         200:
           description: OK
           schema:
-            type: file
+            type: string
+            format: binary
 
   /name/publish:
     get:

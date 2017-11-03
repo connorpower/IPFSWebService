@@ -94,6 +94,90 @@ open class DefaultAPI: APIBase {
     }
 
     /**
+     * enum for parameter type
+     */
+    public enum ModelType_keygen: String { 
+        case rsa = "rsa"
+        case ed25519 = "ed25519"
+    }
+
+    /**
+     Create a new keypair
+     
+     - parameter arg: (query) Name of key to create. 
+     - parameter type: (query) Type of the key to create. 
+     - parameter size: (query) Size of the key to generate 
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func keygen(arg: String, type: ModelType_keygen, size: Int32, completion: @escaping ((_ data: KeygenResponse?,_ error: Error?) -> Void)) {
+        keygenWithRequestBuilder(arg: arg, type: type, size: size).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     Create a new keypair
+     - GET /key/gen
+     - examples: [{contentType=application/json, example=""}]
+     
+     - parameter arg: (query) Name of key to create. 
+     - parameter type: (query) Type of the key to create. 
+     - parameter size: (query) Size of the key to generate 
+
+     - returns: RequestBuilder<KeygenResponse> 
+     */
+    open class func keygenWithRequestBuilder(arg: String, type: ModelType_keygen, size: Int32) -> RequestBuilder<KeygenResponse> {
+        let path = "/key/gen"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg, 
+            "type": type.rawValue, 
+            "size": size.encodeToJSON()
+        ])
+        
+
+        let requestBuilder: RequestBuilder<KeygenResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     List all local keypairs
+     
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func listKeys(completion: @escaping ((_ data: ListKeysResponse?,_ error: Error?) -> Void)) {
+        listKeysWithRequestBuilder().execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     List all local keypairs
+     - GET /key/list
+     - examples: [{contentType=application/json, example=""}]
+
+     - returns: RequestBuilder<ListKeysResponse> 
+     */
+    open class func listKeysWithRequestBuilder() -> RequestBuilder<ListKeysResponse> {
+        let path = "/key/list"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<ListKeysResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
      
      - parameter arg: (query) ipfs path of the object to be published.  
@@ -133,6 +217,44 @@ open class DefaultAPI: APIBase {
         
 
         let requestBuilder: RequestBuilder<PublishResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     List all local keypairs
+     
+     - parameter arg: (query) Name of key to remove. 
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func removeKey(arg: String, completion: @escaping ((_ data: RemoveKeyResponse?,_ error: Error?) -> Void)) {
+        removeKeyWithRequestBuilder(arg: arg).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     List all local keypairs
+     - GET /key/rm
+     - examples: [{contentType=application/json, example=""}]
+     
+     - parameter arg: (query) Name of key to remove. 
+
+     - returns: RequestBuilder<RemoveKeyResponse> 
+     */
+    open class func removeKeyWithRequestBuilder(arg: String) -> RequestBuilder<RemoveKeyResponse> {
+        let path = "/key/rm"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg
+        ])
+        
+
+        let requestBuilder: RequestBuilder<RemoveKeyResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }

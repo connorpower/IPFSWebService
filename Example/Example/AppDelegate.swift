@@ -94,7 +94,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func testGet(of path: String) {
         print("Getting file...\n")
 
-        DefaultAPI.callGet(arg: path) { (data, error) in
+        DefaultAPI.cat(arg: path) { (data, error) in
             if let error = error {
                 fatalError("\(error)")
             } else if let data = data {

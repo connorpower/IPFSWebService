@@ -1,12 +1,12 @@
 {
   "name": "IPFSWebService",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "summary": "Defines and versions the HTTP based IPFS interface.",
   "description": "The API for communication with an IPFS server is defined and versioned by\nthis [Swagger Specification](https://swagger.io).\n\niOS clients need only include this API as a cocoapod dependency.",
   "homepage": "https://github.com/connorpower/IPFSWebService",
   "source": {
     "git": "git@github.com:connorpower/IPFSWebService.git",
-    "tag": "0.1.0"
+    "tag": "0.2.0"
   },
   "authors": "Connor Power",
   "license": "Proprietary",

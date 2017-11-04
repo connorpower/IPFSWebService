@@ -39,11 +39,11 @@ paths:
           schema:
             $ref: '#/definitions/AddResponse'
 
-  /get:
+  /cat:
     get:
       summary:
-        Download IPFS objects.
-      operationId: get
+        Show IPFS object data.
+      operationId: cat
       produces:
         - text/plain
       parameters:

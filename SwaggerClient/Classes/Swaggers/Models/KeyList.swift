@@ -24,3 +24,4 @@ open class KeyList: JSONEncodable {
         return dictionary
     }
 }
+

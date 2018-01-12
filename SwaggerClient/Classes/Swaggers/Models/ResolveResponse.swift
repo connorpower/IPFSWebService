@@ -24,3 +24,4 @@ open class ResolveResponse: JSONEncodable {
         return dictionary
     }
 }
+

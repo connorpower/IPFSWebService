@@ -33,6 +33,13 @@ paths:
             This endpoint expects a file in the body of the request
             as ‘multipart/form-data’.
           required: true
+        - in: query
+          name: pin
+          type: boolean
+          description: |
+            Pin this object when adding.
+          required: false
+          default: false
       responses:
         200:
           description: OK
@@ -59,6 +66,56 @@ paths:
           schema:
             type: string
             format: binary
+
+  /pin/add:
+    get:
+      summary:
+        Pin objects to local storage.
+      operationId: pin
+      parameters:
+        - in: query
+          name: arg
+          type: string
+          description: |
+             Path to object(s) to be pinned.
+          required: true
+        - in: query
+          name: recursive
+          type: boolean
+          description: |
+             Recursively pin the object linked to by the specified object(s).
+          required: false
+          default: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/PinResponse'
+
+  /pin/rm:
+    get:
+      summary:
+        Remove pinned objects from local storage.
+      operationId: unpin
+      parameters:
+        - in: query
+          name: arg
+          type: string
+          description: |
+             Path to object(s) to be unpinned.
+          required: true
+        - in: query
+          name: recursive
+          type: boolean
+          description: |
+             Recursively unpin the object linked to by the specified object(s).
+          required: false
+          default: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/PinResponse'
 
   /name/publish:
     get:
@@ -217,6 +274,20 @@ definitions:
       - Name
       - Hash
       - Size
+
+    PinResponse:
+      type: object
+      properties:
+        Pins:
+          type: array
+          description: A list of pinned objects.
+          items:
+            type: string
+        Progress:
+          type: string
+          example: "<int>"
+      required:
+      - Pins
 
     PublishResponse:
       type: object

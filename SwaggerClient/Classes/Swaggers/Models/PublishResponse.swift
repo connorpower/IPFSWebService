@@ -27,3 +27,4 @@ open class PublishResponse: JSONEncodable {
         return dictionary
     }
 }
+

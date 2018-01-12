@@ -27,3 +27,4 @@ open class Key: JSONEncodable {
         return dictionary
     }
 }
+

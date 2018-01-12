@@ -27,3 +27,4 @@ open class KeygenResponse: JSONEncodable {
         return dictionary
     }
 }
+

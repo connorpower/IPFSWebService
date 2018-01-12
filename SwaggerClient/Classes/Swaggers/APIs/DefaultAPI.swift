@@ -15,10 +15,11 @@ open class DefaultAPI: APIBase {
      Add a file or directory to ipfs.
      
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
+     - parameter pin: (query) Pin this object when adding.  (optional, default to false)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func add(file: URL, completion: @escaping ((_ data: AddResponse?,_ error: Error?) -> Void)) {
-        addWithRequestBuilder(file: file).execute { (response, error) -> Void in
+    open class func add(file: URL, pin: Bool? = nil, completion: @escaping ((_ data: AddResponse?,_ error: Error?) -> Void)) {
+        addWithRequestBuilder(file: file, pin: pin).execute { (response, error) -> Void in
             completion(response?.body, error);
         }
     }
@@ -34,10 +35,11 @@ open class DefaultAPI: APIBase {
 }}]
      
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
+     - parameter pin: (query) Pin this object when adding.  (optional, default to false)
 
      - returns: RequestBuilder<AddResponse> 
      */
-    open class func addWithRequestBuilder(file: URL) -> RequestBuilder<AddResponse> {
+    open class func addWithRequestBuilder(file: URL, pin: Bool? = nil) -> RequestBuilder<AddResponse> {
         let path = "/add"
         let URLString = SwaggerClientAPI.basePath + path
         let formParams: [String:Any?] = [
@@ -48,6 +50,9 @@ open class DefaultAPI: APIBase {
         let parameters = APIHelper.convertBoolToString(nonNullParameters)
 
         let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "pin": pin
+        ])
 
 
         let requestBuilder: RequestBuilder<AddResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
@@ -178,6 +183,50 @@ open class DefaultAPI: APIBase {
     }
 
     /**
+     Pin objects to local storage.
+
+     - parameter arg: (query) Path to object(s) to be pinned.
+     - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func pin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?,_ error: Error?) -> Void)) {
+        pinWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     Pin objects to local storage.
+     - GET /pin/add
+     - examples: [{contentType=application/json, example={
+  "Progress" : "<int>",
+  "Pins" : [ "aeiou" ]
+}}]
+
+     - parameter arg: (query) Path to object(s) to be pinned.
+     - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
+
+     - returns: RequestBuilder<PinResponse>
+     */
+    open class func pinWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<PinResponse> {
+        let path = "/pin/add"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg,
+            "recursive": recursive
+        ])
+
+
+        let requestBuilder: RequestBuilder<PinResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
      
      - parameter arg: (query) ipfs path of the object to be published.  
@@ -298,6 +347,50 @@ open class DefaultAPI: APIBase {
         
 
         let requestBuilder: RequestBuilder<ResolveResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
+     Remove pinned objects from local storage.
+
+     - parameter arg: (query) Path to object(s) to be unpinned.
+     - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func unpin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?,_ error: Error?) -> Void)) {
+        unpinWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+
+    /**
+     Remove pinned objects from local storage.
+     - GET /pin/rm
+     - examples: [{contentType=application/json, example={
+  "Progress" : "<int>",
+  "Pins" : [ "aeiou" ]
+}}]
+
+     - parameter arg: (query) Path to object(s) to be unpinned.
+     - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
+
+     - returns: RequestBuilder<PinResponse>
+     */
+    open class func unpinWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<PinResponse> {
+        let path = "/pin/rm"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg,
+            "recursive": recursive
+        ])
+
+
+        let requestBuilder: RequestBuilder<PinResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }

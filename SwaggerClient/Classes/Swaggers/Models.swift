@@ -195,6 +195,21 @@ class Decoders {
         }
 
 
+        // Decoder for [PinResponse]
+        Decoders.addDecoder(clazz: [PinResponse].self) { (source: AnyObject, instance: AnyObject?) -> [PinResponse] in
+            return Decoders.decode(clazz: [PinResponse].self, source: source)
+        }
+        // Decoder for PinResponse
+        Decoders.addDecoder(clazz: PinResponse.self) { (source: AnyObject, instance: AnyObject?) -> PinResponse in
+            let sourceDictionary = source as! [AnyHashable: Any]
+            let result = instance == nil ? PinResponse() : instance as! PinResponse
+
+            result.pins = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["Pins"] as AnyObject?)
+            result.progress = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["Progress"] as AnyObject?)
+            return result
+        }
+
+
         // Decoder for [PublishResponse]
         Decoders.addDecoder(clazz: [PublishResponse].self) { (source: AnyObject, instance: AnyObject?) -> [PublishResponse] in
             return Decoders.decode(clazz: [PublishResponse].self, source: source)

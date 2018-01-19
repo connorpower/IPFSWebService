@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import RxSwift
 
 
 
@@ -24,6 +25,26 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     Add a file or directory to ipfs.
+     
+     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
+     - parameter pin: (query) Pin this object when adding.  (optional, default to false)
+     - returns: Observable<AddResponse>
+     */
+    open class func add(file: URL, pin: Bool? = nil) -> Observable<AddResponse> {
+        return Observable.create { observer -> Disposable in
+            add(file: file, pin: pin) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Add a file or directory to ipfs.
@@ -72,6 +93,25 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     Show IPFS object data.
+     
+     - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
+     - returns: Observable<Data>
+     */
+    open class func cat(arg: String) -> Observable<Data> {
+        return Observable.create { observer -> Disposable in
+            cat(arg: arg) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Show IPFS object data.
@@ -120,6 +160,27 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     Create a new keypair
+     
+     - parameter arg: (query) Name of key to create. 
+     - parameter type: (query) Type of the key to create. 
+     - parameter size: (query) Size of the key to generate 
+     - returns: Observable<KeygenResponse>
+     */
+    open class func keygen(arg: String, type: ModelType_keygen, size: Int) -> Observable<KeygenResponse> {
+        return Observable.create { observer -> Disposable in
+            keygen(arg: arg, type: type, size: size) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Create a new keypair
@@ -161,6 +222,24 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     List all local keypairs
+     
+     - returns: Observable<ListKeysResponse>
+     */
+    open class func listKeys() -> Observable<ListKeysResponse> {
+        return Observable.create { observer -> Disposable in
+            listKeys() { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      List all local keypairs
@@ -195,6 +274,26 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     Pin objects to local storage.
+     
+     - parameter arg: (query) Path to object(s) to be pinned.  
+     - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
+     - returns: Observable<PinResponse>
+     */
+    open class func pin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
+        return Observable.create { observer -> Disposable in
+            pin(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Pin objects to local storage.
@@ -239,6 +338,26 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) ipfs path of the object to be published.  
+     - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
+     - returns: Observable<PublishResponse>
+     */
+    open class func publish(arg: String, key: String? = nil) -> Observable<PublishResponse> {
+        return Observable.create { observer -> Disposable in
+            publish(arg: arg, key: key) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
@@ -282,6 +401,25 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     List all local keypairs
+     
+     - parameter arg: (query) Name of key to remove. 
+     - returns: Observable<RemoveKeyResponse>
+     */
+    open class func removeKey(arg: String) -> Observable<RemoveKeyResponse> {
+        return Observable.create { observer -> Disposable in
+            removeKey(arg: arg) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      List all local keypairs
@@ -321,6 +459,26 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) The IPNS name to resolve.  
+     - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
+     - returns: Observable<ResolveResponse>
+     */
+    open class func resolve(arg: String, recursive: Bool? = nil) -> Observable<ResolveResponse> {
+        return Observable.create { observer -> Disposable in
+            resolve(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
@@ -364,6 +522,26 @@ open class DefaultAPI {
         }
     }
 
+    /**
+     Remove pinned objects from local storage.
+     
+     - parameter arg: (query) Path to object(s) to be unpinned.  
+     - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
+     - returns: Observable<PinResponse>
+     */
+    open class func unpin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
+        return Observable.create { observer -> Disposable in
+            unpin(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Remove pinned objects from local storage.

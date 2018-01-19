@@ -8,20 +8,34 @@
 import Foundation
 
 
-open class ListKeysResponse: JSONEncodable {
+
+open class ListKeysResponse: Codable {
 
     /** A list of keypairs. */
-    public var keys: [Key]?
+    public var keys: [Key]
 
-    public init() {}
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Keys"] = self.keys?.encodeToJSON()
+    
+    public init(keys: [Key]) {
+        self.keys = keys
+    }
+    
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(keys, forKey: "Keys")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        keys = try container.decode([Key].self, forKey: "Keys")
     }
 }
 

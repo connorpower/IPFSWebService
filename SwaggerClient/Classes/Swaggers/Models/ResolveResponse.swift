@@ -8,20 +8,34 @@
 import Foundation
 
 
-open class ResolveResponse: JSONEncodable {
+
+open class ResolveResponse: Codable {
 
     /** The path to which the name resolved.  */
-    public var path: String?
+    public var path: String
 
-    public init() {}
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Path"] = self.path
+    
+    public init(path: String) {
+        self.path = path
+    }
+    
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(path, forKey: "Path")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        path = try container.decode(String.self, forKey: "Path")
     }
 }
 

@@ -8,22 +8,38 @@
 import Foundation
 
 
-open class PinResponse: JSONEncodable {
+
+open class PinResponse: Codable {
 
     /** A list of pinned objects. */
-    public var pins: [String]?
+    public var pins: [String]
     public var progress: String?
 
-    public init() {}
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Pins"] = self.pins?.encodeToJSON()
-        nillableDictionary["Progress"] = self.progress
+    
+    public init(pins: [String], progress: String?) {
+        self.pins = pins
+        self.progress = progress
+    }
+    
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(pins, forKey: "Pins")
+        try container.encodeIfPresent(progress, forKey: "Progress")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        pins = try container.decode([String].self, forKey: "Pins")
+        progress = try container.decodeIfPresent(String.self, forKey: "Progress")
     }
 }
 

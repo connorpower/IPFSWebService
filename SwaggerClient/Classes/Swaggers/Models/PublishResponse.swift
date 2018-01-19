@@ -8,23 +8,39 @@
 import Foundation
 
 
-open class PublishResponse: JSONEncodable {
+
+open class PublishResponse: Codable {
 
     /** The name under which the value was published. By default, this will be the peer ID (i.e. the hash of the node&#39;s public key).  */
-    public var name: String?
+    public var name: String
     /** The resource to which the name now resolves.  */
-    public var value: String?
+    public var value: String
 
-    public init() {}
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Name"] = self.name
-        nillableDictionary["Value"] = self.value
+    
+    public init(name: String, value: String) {
+        self.name = name
+        self.value = value
+    }
+    
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(name, forKey: "Name")
+        try container.encode(value, forKey: "Value")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        name = try container.decode(String.self, forKey: "Name")
+        value = try container.decode(String.self, forKey: "Value")
     }
 }
 

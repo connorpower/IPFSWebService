@@ -8,23 +8,41 @@
 import Foundation
 
 
-open class AddResponse: JSONEncodable {
 
-    public var name: String?
-    public var hash: String?
-    public var size: String?
+open class AddResponse: Codable {
 
-    public init() {}
+    public var name: String
+    public var hash: String
+    public var size: String
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Name"] = self.name
-        nillableDictionary["Hash"] = self.hash
-        nillableDictionary["Size"] = self.size
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    
+    public init(name: String, hash: String, size: String) {
+        self.name = name
+        self.hash = hash
+        self.size = size
+    }
+    
+
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(name, forKey: "Name")
+        try container.encode(hash, forKey: "Hash")
+        try container.encode(size, forKey: "Size")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        name = try container.decode(String.self, forKey: "Name")
+        hash = try container.decode(String.self, forKey: "Hash")
+        size = try container.decode(String.self, forKey: "Size")
     }
 }
 

@@ -7,33 +7,57 @@
 
 import Foundation
 import Alamofire
+import RxSwift
 
 
-open class DefaultAPI: APIBase {
+
+open class DefaultAPI {
     /**
      Add a file or directory to ipfs.
+     
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
      - parameter pin: (query) Pin this object when adding.  (optional, default to false)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func add(file: URL, pin: Bool? = nil, completion: @escaping ((_ data: AddResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func add(file: URL, pin: Bool? = nil, completion: @escaping ((_ data: AddResponse?,_ error: Error?) -> Void)) {
         addWithRequestBuilder(file: file, pin: pin).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     Add a file or directory to ipfs.
+     
+     - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
+     - parameter pin: (query) Pin this object when adding.  (optional, default to false)
+     - returns: Observable<AddResponse>
+     */
+    open class func add(file: URL, pin: Bool? = nil) -> Observable<AddResponse> {
+        return Observable.create { observer -> Disposable in
+            add(file: file, pin: pin) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Add a file or directory to ipfs.
      - POST /add
-
      - examples: [{contentType=application/json, example={
   "Size" : "193960",
   "Hash" : "QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7",
   "Name" : "The Cathedral and the Bazaar.pdf"
 }}]
+     
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
      - parameter pin: (query) Pin this object when adding.  (optional, default to false)
+
      - returns: RequestBuilder<AddResponse> 
      */
     open class func addWithRequestBuilder(file: URL, pin: Bool? = nil) -> RequestBuilder<AddResponse> {
@@ -50,6 +74,7 @@ open class DefaultAPI: APIBase {
         url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
             "pin": pin
         ])
+        
 
         let requestBuilder: RequestBuilder<AddResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -58,22 +83,43 @@ open class DefaultAPI: APIBase {
 
     /**
      Show IPFS object data.
+     
      - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func cat(arg: String, completion: @escaping ((_ data: Data?, _ error: ErrorResponse?) -> Void)) {
+    open class func cat(arg: String, completion: @escaping ((_ data: Data?,_ error: Error?) -> Void)) {
         catWithRequestBuilder(arg: arg).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     Show IPFS object data.
+     
+     - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
+     - returns: Observable<Data>
+     */
+    open class func cat(arg: String) -> Observable<Data> {
+        return Observable.create { observer -> Disposable in
+            cat(arg: arg) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Show IPFS object data.
      - GET /cat
-
      - examples: [{output=none}]
+     
      - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
+
      - returns: RequestBuilder<Data> 
      */
     open class func catWithRequestBuilder(arg: String) -> RequestBuilder<Data> {
@@ -85,6 +131,7 @@ open class DefaultAPI: APIBase {
         url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
             "arg": arg
         ])
+        
 
         let requestBuilder: RequestBuilder<Data>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -101,29 +148,52 @@ open class DefaultAPI: APIBase {
 
     /**
      Create a new keypair
+     
      - parameter arg: (query) Name of key to create. 
      - parameter type: (query) Type of the key to create. 
      - parameter size: (query) Size of the key to generate 
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func keygen(arg: String, type: ModelType_keygen, size: Int32, completion: @escaping ((_ data: KeygenResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func keygen(arg: String, type: ModelType_keygen, size: Int, completion: @escaping ((_ data: KeygenResponse?,_ error: Error?) -> Void)) {
         keygenWithRequestBuilder(arg: arg, type: type, size: size).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     Create a new keypair
+     
+     - parameter arg: (query) Name of key to create. 
+     - parameter type: (query) Type of the key to create. 
+     - parameter size: (query) Size of the key to generate 
+     - returns: Observable<KeygenResponse>
+     */
+    open class func keygen(arg: String, type: ModelType_keygen, size: Int) -> Observable<KeygenResponse> {
+        return Observable.create { observer -> Disposable in
+            keygen(arg: arg, type: type, size: size) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Create a new keypair
      - GET /key/gen
-
      - examples: [{contentType=application/json, example=""}]
+     
      - parameter arg: (query) Name of key to create. 
      - parameter type: (query) Type of the key to create. 
      - parameter size: (query) Size of the key to generate 
+
      - returns: RequestBuilder<KeygenResponse> 
      */
-    open class func keygenWithRequestBuilder(arg: String, type: ModelType_keygen, size: Int32) -> RequestBuilder<KeygenResponse> {
+    open class func keygenWithRequestBuilder(arg: String, type: ModelType_keygen, size: Int) -> RequestBuilder<KeygenResponse> {
         let path = "/key/gen"
         let URLString = SwaggerClientAPI.basePath + path
         let parameters: [String:Any]? = nil
@@ -134,6 +204,7 @@ open class DefaultAPI: APIBase {
             "type": type.rawValue, 
             "size": size.encodeToJSON()
         ])
+        
 
         let requestBuilder: RequestBuilder<KeygenResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -142,20 +213,39 @@ open class DefaultAPI: APIBase {
 
     /**
      List all local keypairs
+     
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func listKeys(completion: @escaping ((_ data: ListKeysResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func listKeys(completion: @escaping ((_ data: ListKeysResponse?,_ error: Error?) -> Void)) {
         listKeysWithRequestBuilder().execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     List all local keypairs
+     
+     - returns: Observable<ListKeysResponse>
+     */
+    open class func listKeys() -> Observable<ListKeysResponse> {
+        return Observable.create { observer -> Disposable in
+            listKeys() { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      List all local keypairs
      - GET /key/list
-
      - examples: [{contentType=application/json, example=""}]
+
      - returns: RequestBuilder<ListKeysResponse> 
      */
     open class func listKeysWithRequestBuilder() -> RequestBuilder<ListKeysResponse> {
@@ -165,6 +255,7 @@ open class DefaultAPI: APIBase {
 
         let url = NSURLComponents(string: URLString)
 
+
         let requestBuilder: RequestBuilder<ListKeysResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
@@ -172,27 +263,49 @@ open class DefaultAPI: APIBase {
 
     /**
      Pin objects to local storage.
+     
      - parameter arg: (query) Path to object(s) to be pinned.  
      - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func pin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func pin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?,_ error: Error?) -> Void)) {
         pinWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     Pin objects to local storage.
+     
+     - parameter arg: (query) Path to object(s) to be pinned.  
+     - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
+     - returns: Observable<PinResponse>
+     */
+    open class func pin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
+        return Observable.create { observer -> Disposable in
+            pin(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Pin objects to local storage.
      - GET /pin/add
-
      - examples: [{contentType=application/json, example={
   "Progress" : "<int>",
   "Pins" : [ "Pins", "Pins" ]
 }}]
+     
      - parameter arg: (query) Path to object(s) to be pinned.  
      - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
+
      - returns: RequestBuilder<PinResponse> 
      */
     open class func pinWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<PinResponse> {
@@ -205,6 +318,7 @@ open class DefaultAPI: APIBase {
             "arg": arg, 
             "recursive": recursive
         ])
+        
 
         let requestBuilder: RequestBuilder<PinResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -213,27 +327,49 @@ open class DefaultAPI: APIBase {
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
      - parameter arg: (query) ipfs path of the object to be published.  
      - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func publish(arg: String, key: String? = nil, completion: @escaping ((_ data: PublishResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func publish(arg: String, key: String? = nil, completion: @escaping ((_ data: PublishResponse?,_ error: Error?) -> Void)) {
         publishWithRequestBuilder(arg: arg, key: key).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) ipfs path of the object to be published.  
+     - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
+     - returns: Observable<PublishResponse>
+     */
+    open class func publish(arg: String, key: String? = nil) -> Observable<PublishResponse> {
+        return Observable.create { observer -> Disposable in
+            publish(arg: arg, key: key) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
      - GET /name/publish
-
      - examples: [{contentType=application/json, example={
   "Value" : "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7",
   "Name" : "QmXXcnBhtXB7dFFxwEyzG1YctDU8ZpcKweQcKp1JHXktn8"
 }}]
+     
      - parameter arg: (query) ipfs path of the object to be published.  
      - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
+
      - returns: RequestBuilder<PublishResponse> 
      */
     open class func publishWithRequestBuilder(arg: String, key: String? = nil) -> RequestBuilder<PublishResponse> {
@@ -246,6 +382,7 @@ open class DefaultAPI: APIBase {
             "arg": arg, 
             "key": key
         ])
+        
 
         let requestBuilder: RequestBuilder<PublishResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -254,22 +391,43 @@ open class DefaultAPI: APIBase {
 
     /**
      List all local keypairs
+     
      - parameter arg: (query) Name of key to remove. 
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func removeKey(arg: String, completion: @escaping ((_ data: RemoveKeyResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func removeKey(arg: String, completion: @escaping ((_ data: RemoveKeyResponse?,_ error: Error?) -> Void)) {
         removeKeyWithRequestBuilder(arg: arg).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     List all local keypairs
+     
+     - parameter arg: (query) Name of key to remove. 
+     - returns: Observable<RemoveKeyResponse>
+     */
+    open class func removeKey(arg: String) -> Observable<RemoveKeyResponse> {
+        return Observable.create { observer -> Disposable in
+            removeKey(arg: arg) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      List all local keypairs
      - GET /key/rm
-
      - examples: [{contentType=application/json, example=""}]
+     
      - parameter arg: (query) Name of key to remove. 
+
      - returns: RequestBuilder<RemoveKeyResponse> 
      */
     open class func removeKeyWithRequestBuilder(arg: String) -> RequestBuilder<RemoveKeyResponse> {
@@ -281,6 +439,7 @@ open class DefaultAPI: APIBase {
         url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
             "arg": arg
         ])
+        
 
         let requestBuilder: RequestBuilder<RemoveKeyResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -289,26 +448,48 @@ open class DefaultAPI: APIBase {
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
      - parameter arg: (query) The IPNS name to resolve.  
      - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func resolve(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: ResolveResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func resolve(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: ResolveResponse?,_ error: Error?) -> Void)) {
         resolveWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
+     
+     - parameter arg: (query) The IPNS name to resolve.  
+     - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
+     - returns: Observable<ResolveResponse>
+     */
+    open class func resolve(arg: String, recursive: Bool? = nil) -> Observable<ResolveResponse> {
+        return Observable.create { observer -> Disposable in
+            resolve(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
      - GET /name/resolve
-
      - examples: [{contentType=application/json, example={
   "Path" : "/ipfs/QmU6A9DYK4N7dvgcrmr9YRjJ4RNxAE6HnMjBBPLGedqVT7"
 }}]
+     
      - parameter arg: (query) The IPNS name to resolve.  
      - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
+
      - returns: RequestBuilder<ResolveResponse> 
      */
     open class func resolveWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<ResolveResponse> {
@@ -321,6 +502,7 @@ open class DefaultAPI: APIBase {
             "arg": arg, 
             "recursive": recursive
         ])
+        
 
         let requestBuilder: RequestBuilder<ResolveResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 
@@ -329,27 +511,49 @@ open class DefaultAPI: APIBase {
 
     /**
      Remove pinned objects from local storage.
+     
      - parameter arg: (query) Path to object(s) to be unpinned.  
      - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func unpin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?, _ error: ErrorResponse?) -> Void)) {
+    open class func unpin(arg: String, recursive: Bool? = nil, completion: @escaping ((_ data: PinResponse?,_ error: Error?) -> Void)) {
         unpinWithRequestBuilder(arg: arg, recursive: recursive).execute { (response, error) -> Void in
-            completion(response?.body, error)
+            completion(response?.body, error);
         }
     }
 
+    /**
+     Remove pinned objects from local storage.
+     
+     - parameter arg: (query) Path to object(s) to be unpinned.  
+     - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
+     - returns: Observable<PinResponse>
+     */
+    open class func unpin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
+        return Observable.create { observer -> Disposable in
+            unpin(arg: arg, recursive: recursive) { data, error in
+                if let error = error {
+                    observer.on(.error(error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
 
     /**
      Remove pinned objects from local storage.
      - GET /pin/rm
-
      - examples: [{contentType=application/json, example={
   "Progress" : "<int>",
   "Pins" : [ "Pins", "Pins" ]
 }}]
+     
      - parameter arg: (query) Path to object(s) to be unpinned.  
      - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
+
      - returns: RequestBuilder<PinResponse> 
      */
     open class func unpinWithRequestBuilder(arg: String, recursive: Bool? = nil) -> RequestBuilder<PinResponse> {
@@ -362,6 +566,7 @@ open class DefaultAPI: APIBase {
             "arg": arg, 
             "recursive": recursive
         ])
+        
 
         let requestBuilder: RequestBuilder<PinResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 

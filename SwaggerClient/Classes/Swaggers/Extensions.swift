@@ -84,104 +84,90 @@ extension UUID: JSONEncodable {
     }
 }
 
-/// Represents an ISO-8601 full-date (RFC-3339).
-/// ex: 12-31-1999
-/// https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14
-public final class ISOFullDate: CustomStringConvertible {
+extension String: CodingKey {
 
-    public let year: Int
-    public let month: Int
-    public let day: Int
-
-    public init(year: Int, month: Int, day: Int) {
-        self.year = year
-        self.month = month
-        self.day = day
+    public var stringValue: String {
+        return self
     }
 
-    /**
-     Converts a Date to an ISOFullDate. Only interested in the year, month, day components.
-
-     - parameter date: The date to convert.
-
-     - returns: An ISOFullDate constructed from the year, month, day of the date.
-     */
-    public static func from(date: Date) -> ISOFullDate? {
-        let calendar = Calendar(identifier: .gregorian)
-
-        let components = calendar.dateComponents(
-            [
-                .year,
-                .month,
-                .day,
-            ],
-            from: date
-        )
-
-        guard
-            let year = components.year,
-            let month = components.month,
-            let day = components.day
-        else {
-            return nil
-        }
-
-        return ISOFullDate(
-            year: year,
-            month: month,
-            day: day
-        )
+    public init?(stringValue: String) {
+        self.init(stringLiteral: stringValue)
     }
 
-    /**
-     Converts a ISO-8601 full-date string to an ISOFullDate.
-
-     - parameter string: The ISO-8601 full-date format string to convert.
-
-     - returns: An ISOFullDate constructed from the string.
-     */
-    public static func from(string: String) -> ISOFullDate? {
-        let components = string
-            .characters
-            .split(separator: "-")
-            .map(String.init)
-            .flatMap { Int($0) }
-        guard components.count == 3 else { return nil }
-
-        return ISOFullDate(
-            year: components[0],
-            month: components[1],
-            day: components[2]
-        )
+    public var intValue: Int? {
+        return nil
     }
 
-    /**
-     Converts the receiver to a Date, in the default time zone.
-
-     - returns: A Date from the components of the receiver, in the default time zone.
-     */
-    public func toDate() -> Date? {
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = day
-        components.timeZone = TimeZone.ReferenceType.default
-        let calendar = Calendar(identifier: .gregorian)
-        return calendar.date(from: components)
-    }
-
-    // MARK: CustomStringConvertible
-
-    public var description: String {
-        return "\(year)-\(month)-\(day)"
+    public init?(intValue: Int) {
+        return nil
     }
 
 }
 
-extension ISOFullDate: JSONEncodable {
-    public func encodeToJSON() -> Any {
-        return "\(year)-\(month)-\(day)"
+extension KeyedEncodingContainerProtocol {
+
+    public mutating func encodeArray<T>(_ values: [T], forKey key: Self.Key) throws where T : Encodable {
+        var arrayContainer = nestedUnkeyedContainer(forKey: key)
+        try arrayContainer.encode(contentsOf: values)
     }
+
+    public mutating func encodeArrayIfPresent<T>(_ values: [T]?, forKey key: Self.Key) throws where T : Encodable {
+        if let values = values {
+            try encodeArray(values, forKey: key)
+        }
+    }
+
+    public mutating func encodeMap<T>(_ pairs: [Self.Key: T]) throws where T : Encodable {
+        for (key, value) in pairs {
+            try encode(value, forKey: key)
+        }
+    }
+
+    public mutating func encodeMapIfPresent<T>(_ pairs: [Self.Key: T]?) throws where T : Encodable {
+        if let pairs = pairs {
+            try encodeMap(pairs)
+        }
+    }
+
+}
+
+extension KeyedDecodingContainerProtocol {
+
+    public func decodeArray<T>(_ type: T.Type, forKey key: Self.Key) throws -> [T] where T : Decodable {
+        var tmpArray = [T]()
+
+        var nestedContainer = try nestedUnkeyedContainer(forKey: key)
+        while !nestedContainer.isAtEnd {
+            let arrayValue = try nestedContainer.decode(T.self)
+            tmpArray.append(arrayValue)
+        }
+
+        return tmpArray
+    }
+
+    public func decodeArrayIfPresent<T>(_ type: T.Type, forKey key: Self.Key) throws -> [T]? where T : Decodable {
+        var tmpArray: [T]? = nil
+
+        if contains(key) {
+            tmpArray = try decodeArray(T.self, forKey: key)
+        }
+
+        return tmpArray
+    }
+
+    public func decodeMap<T>(_ type: T.Type, excludedKeys: Set<Self.Key>) throws -> [Self.Key: T] where T : Decodable {
+        var map: [Self.Key : T] = [:]
+
+        for key in allKeys {
+            if !excludedKeys.contains(key) {
+                let value = try decode(T.self, forKey: key)
+                map[key] = value
+            }
+        }
+
+        return map
+    }
+
 }
 
 

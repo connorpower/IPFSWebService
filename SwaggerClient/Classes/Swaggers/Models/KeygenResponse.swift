@@ -8,23 +8,39 @@
 import Foundation
 
 
-open class KeygenResponse: JSONEncodable {
+
+open class KeygenResponse: Codable {
 
     /** The name of the key as given to the keygen API. */
-    public var name: String?
+    public var name: String
     /** The generated key for usage with IPNS. */
-    public var id: String?
+    public var id: String
 
-    public init() {}
 
-    // MARK: JSONEncodable
-    open func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?]()
-        nillableDictionary["Name"] = self.name
-        nillableDictionary["Id"] = self.id
+    
+    public init(name: String, id: String) {
+        self.name = name
+        self.id = id
+    }
+    
 
-        let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
-        return dictionary
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+
+        var container = encoder.container(keyedBy: String.self)
+
+        try container.encode(name, forKey: "Name")
+        try container.encode(id, forKey: "Id")
+    }
+
+    // Decodable protocol methods
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: String.self)
+
+        name = try container.decode(String.self, forKey: "Name")
+        id = try container.decode(String.self, forKey: "Id")
     }
 }
 

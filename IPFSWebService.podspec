@@ -19,4 +19,5 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.13'
 
   s.dependency 'Alamofire', '~> 4.5'
+  s.dependency 'RxSwift', '~> 4.0'
 end

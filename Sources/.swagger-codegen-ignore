@@ -8,6 +8,6 @@ IPFS-API.podspec
 SwaggerClient.podspec
 IPFSWebService.podspec
 .gitignore
-Cartffile
+Cartfile
 git_push.sh
 

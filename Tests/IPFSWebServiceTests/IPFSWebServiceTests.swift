@@ -2,15 +2,13 @@ import XCTest
 @testable import IPFSWebService
 
 class IPFSWebServiceTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(IPFSWebService().text, "Hello, World!")
+
+    func testInstantiation() {
+        XCTAssertNotNil(DefaultAPI())
     }
 
-
     static var allTests = [
-        ("testExample", testExample),
+        ("testInstantiation", testInstantiation),
     ]
+
 }

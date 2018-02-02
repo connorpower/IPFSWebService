@@ -6,4 +6,8 @@
 
 IPFS-API.podspec
 SwaggerClient.podspec
+IPFSWebService.podspec
 .gitignore
+Cartffile
+git_push.sh
+

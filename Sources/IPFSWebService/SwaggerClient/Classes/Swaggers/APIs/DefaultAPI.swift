@@ -7,7 +7,7 @@
 
 import Foundation
 import Alamofire
-import RxSwift
+import PromiseKit
 
 
 
@@ -30,20 +30,18 @@ open class DefaultAPI {
      
      - parameter file: (form) This endpoint expects a file in the body of the request as ‘multipart/form-data’.  
      - parameter pin: (query) Pin this object when adding.  (optional, default to false)
-     - returns: Observable<AddResponse>
+     - returns: Promise<AddResponse>
      */
-    open class func add(file: URL, pin: Bool? = nil) -> Observable<AddResponse> {
-        return Observable.create { observer -> Disposable in
-            add(file: file, pin: pin) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func add( file: URL,  pin: Bool? = nil) -> Promise<AddResponse> {
+        let deferred = Promise<AddResponse>.pending()
+        add(file: file, pin: pin) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -97,20 +95,18 @@ open class DefaultAPI {
      Show IPFS object data.
      
      - parameter arg: (query) The path to the IPFS object(s) to be outputted.  
-     - returns: Observable<Data>
+     - returns: Promise<Data>
      */
-    open class func cat(arg: String) -> Observable<Data> {
-        return Observable.create { observer -> Disposable in
-            cat(arg: arg) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func cat( arg: String) -> Promise<Data> {
+        let deferred = Promise<Data>.pending()
+        cat(arg: arg) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -166,20 +162,18 @@ open class DefaultAPI {
      - parameter arg: (query) Name of key to create. 
      - parameter type: (query) Type of the key to create. 
      - parameter size: (query) Size of the key to generate 
-     - returns: Observable<KeygenResponse>
+     - returns: Promise<KeygenResponse>
      */
-    open class func keygen(arg: String, type: ModelType_keygen, size: Int) -> Observable<KeygenResponse> {
-        return Observable.create { observer -> Disposable in
-            keygen(arg: arg, type: type, size: size) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func keygen( arg: String,  type: ModelType_keygen,  size: Int) -> Promise<KeygenResponse> {
+        let deferred = Promise<KeygenResponse>.pending()
+        keygen(arg: arg, type: type, size: size) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -225,20 +219,18 @@ open class DefaultAPI {
     /**
      List all local keypairs
      
-     - returns: Observable<ListKeysResponse>
+     - returns: Promise<ListKeysResponse>
      */
-    open class func listKeys() -> Observable<ListKeysResponse> {
-        return Observable.create { observer -> Disposable in
-            listKeys() { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func listKeys() -> Promise<ListKeysResponse> {
+        let deferred = Promise<ListKeysResponse>.pending()
+        listKeys() { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -279,20 +271,18 @@ open class DefaultAPI {
      
      - parameter arg: (query) Path to object(s) to be pinned.  
      - parameter recursive: (query) Recursively pin the object linked to by the specified object(s).  (optional, default to true)
-     - returns: Observable<PinResponse>
+     - returns: Promise<PinResponse>
      */
-    open class func pin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
-        return Observable.create { observer -> Disposable in
-            pin(arg: arg, recursive: recursive) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func pin( arg: String,  recursive: Bool? = nil) -> Promise<PinResponse> {
+        let deferred = Promise<PinResponse>.pending()
+        pin(arg: arg, recursive: recursive) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -343,20 +333,18 @@ open class DefaultAPI {
      
      - parameter arg: (query) ipfs path of the object to be published.  
      - parameter key: (query) Name of the key to be used, as listed by ‘ipfs key list’. Default is “self”.  (optional)
-     - returns: Observable<PublishResponse>
+     - returns: Promise<PublishResponse>
      */
-    open class func publish(arg: String, key: String? = nil) -> Observable<PublishResponse> {
-        return Observable.create { observer -> Disposable in
-            publish(arg: arg, key: key) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func publish( arg: String,  key: String? = nil) -> Promise<PublishResponse> {
+        let deferred = Promise<PublishResponse>.pending()
+        publish(arg: arg, key: key) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -405,20 +393,18 @@ open class DefaultAPI {
      List all local keypairs
      
      - parameter arg: (query) Name of key to remove. 
-     - returns: Observable<RemoveKeyResponse>
+     - returns: Promise<RemoveKeyResponse>
      */
-    open class func removeKey(arg: String) -> Observable<RemoveKeyResponse> {
-        return Observable.create { observer -> Disposable in
-            removeKey(arg: arg) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func removeKey( arg: String) -> Promise<RemoveKeyResponse> {
+        let deferred = Promise<RemoveKeyResponse>.pending()
+        removeKey(arg: arg) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -464,20 +450,18 @@ open class DefaultAPI {
      
      - parameter arg: (query) The IPNS name to resolve.  
      - parameter recursive: (query) Resolve until the result is not an IPNS name. Default is false.  (optional)
-     - returns: Observable<ResolveResponse>
+     - returns: Promise<ResolveResponse>
      */
-    open class func resolve(arg: String, recursive: Bool? = nil) -> Observable<ResolveResponse> {
-        return Observable.create { observer -> Disposable in
-            resolve(arg: arg, recursive: recursive) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func resolve( arg: String,  recursive: Bool? = nil) -> Promise<ResolveResponse> {
+        let deferred = Promise<ResolveResponse>.pending()
+        resolve(arg: arg, recursive: recursive) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**
@@ -527,20 +511,18 @@ open class DefaultAPI {
      
      - parameter arg: (query) Path to object(s) to be unpinned.  
      - parameter recursive: (query) Recursively unpin the object linked to by the specified object(s).  (optional, default to true)
-     - returns: Observable<PinResponse>
+     - returns: Promise<PinResponse>
      */
-    open class func unpin(arg: String, recursive: Bool? = nil) -> Observable<PinResponse> {
-        return Observable.create { observer -> Disposable in
-            unpin(arg: arg, recursive: recursive) { data, error in
-                if let error = error {
-                    observer.on(.error(error))
-                } else {
-                    observer.on(.next(data!))
-                }
-                observer.on(.completed)
+    open class func unpin( arg: String,  recursive: Bool? = nil) -> Promise<PinResponse> {
+        let deferred = Promise<PinResponse>.pending()
+        unpin(arg: arg, recursive: recursive) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
             }
-            return Disposables.create()
         }
+        return deferred.promise
     }
 
     /**

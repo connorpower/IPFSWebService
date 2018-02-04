@@ -4,7 +4,7 @@ info:
   title: IPFSWebService
   description:
     This specification defines a minimalist subset of the HTTP API for IPFS.
-  version: 4.0.0
+  version: 4.1.0
 
 host: 127.0.0.1:5001
 basePath: /api/v0

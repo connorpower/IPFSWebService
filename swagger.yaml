@@ -4,7 +4,7 @@ info:
   title: IPFSWebService
   description:
     This specification defines a minimalist subset of the HTTP API for IPFS.
-  version: 4.0.0
+  version: 4.1.0
 
 host: 127.0.0.1:5001
 basePath: /api/v0
@@ -230,6 +230,35 @@ paths:
           schema:
             $ref: '#/definitions/RemoveKeyResponse'
 
+  /key/rename:
+    get:
+      summary:
+        Renames a given keypair
+      operationId: renameKey
+      parameters:
+        - in: query
+          name: arg
+          description: Name of key to rename.
+          type: string
+          required: true
+        - in: query
+          name: arg
+          description: |
+            The new name for the key. The duplicate 'arg' is not a typo.
+            This is how the IPFS API expects the query parameters.
+          type: string
+          required: true
+        - in: query
+          name: force
+          description: Allow to overwrite an existing key.
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/RenameKeyResponse'
+
 definitions:
 
     Key:
@@ -332,3 +361,26 @@ definitions:
       allOf:
         - $ref: '#/definitions/KeyList'
         - type: object
+
+    RenameKeyResponse:
+      type: object
+      properties:
+        Was:
+          type: string
+          description: The previous name of the key.
+          example: "my-key"
+        Now:
+          type: string
+          description: The new name of the key.
+          example: "my-new-key-name"
+        Id:
+          type: string
+          description: The generated key for usage with IPNS.
+          example: "QmerDzHK1aRgh9dP1KxZXqEBFgQonRnxWfqeHTvt8h1PAm"
+        Overwrite:
+          type: boolean
+          description: Indicates whether an existing key was overriden.
+      required:
+      - Was
+      - Now
+      - Id

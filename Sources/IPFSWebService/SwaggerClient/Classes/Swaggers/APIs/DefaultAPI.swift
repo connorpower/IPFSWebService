@@ -488,12 +488,8 @@ open class DefaultAPI {
         let parameters: [String:Any]? = nil
 
         let url = NSURLComponents(string: URLString)
-        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
-            "arg": arg, 
-            "arg": arg2, 
-            "force": force
-        ])
-        
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:["arg": arg])! +
+                          APIHelper.mapValuesToQueryItems(values:["arg": arg2, "force": force])! 
 
         let requestBuilder: RequestBuilder<RenameKeyResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
 

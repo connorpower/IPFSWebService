@@ -433,6 +433,74 @@ open class DefaultAPI {
     }
 
     /**
+     Renames a given keypair
+     
+     - parameter arg: (query) Name of key to rename. 
+     - parameter arg2: (query) The new name for the key. 
+     - parameter force: (query) Allow to overwrite an existing key. (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func renameKey(arg: String, arg2: String, force: Bool? = nil, completion: @escaping ((_ data: RenameKeyResponse?,_ error: Error?) -> Void)) {
+        renameKeyWithRequestBuilder(arg: arg, arg2: arg2, force: force).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+    /**
+     Renames a given keypair
+     
+     - parameter arg: (query) Name of key to rename. 
+     - parameter arg2: (query) The new name for the key. 
+     - parameter force: (query) Allow to overwrite an existing key. (optional)
+     - returns: Promise<RenameKeyResponse>
+     */
+    open class func renameKey( arg: String,  arg2: String,  force: Bool? = nil) -> Promise<RenameKeyResponse> {
+        let deferred = Promise<RenameKeyResponse>.pending()
+        renameKey(arg: arg, arg2: arg2, force: force) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     Renames a given keypair
+     - GET /key/rename
+     - examples: [{contentType=application/json, example={
+  "Overwrite" : true,
+  "Now" : "my-new-key-name",
+  "Was" : "my-key",
+  "Id" : "QmerDzHK1aRgh9dP1KxZXqEBFgQonRnxWfqeHTvt8h1PAm"
+}}]
+     
+     - parameter arg: (query) Name of key to rename. 
+     - parameter arg2: (query) The new name for the key. 
+     - parameter force: (query) Allow to overwrite an existing key. (optional)
+
+     - returns: RequestBuilder<RenameKeyResponse> 
+     */
+    open class func renameKeyWithRequestBuilder(arg: String, arg2: String, force: Bool? = nil) -> RequestBuilder<RenameKeyResponse> {
+        let path = "/key/rename"
+        let URLString = SwaggerClientAPI.basePath + path
+        let parameters: [String:Any]? = nil
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "arg": arg, 
+            "arg": arg2, 
+            "force": force
+        ])
+        
+
+        let requestBuilder: RequestBuilder<RenameKeyResponse>.Type = SwaggerClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
+    }
+
+    /**
      IPNS is a PKI namespace, where names are the hashes of public keys, and the private key enables publishing new (signed) values. In both publish and resolve, the default name used is the node's own PeerID, which is the hash of its public key.
      
      - parameter arg: (query) The IPNS name to resolve.  
